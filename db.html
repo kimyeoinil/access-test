@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>保存测试 / 저장 테스트</title>
+<style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei","Malgun Gothic",sans-serif;background:#f4f6fa;margin:0;padding:20px;color:#1d2433}
+.box{max-width:520px;margin:20px auto;background:#fff;border-radius:14px;padding:24px;box-shadow:0 2px 8px #0002}
+h1{font-size:20px;margin:0 0 8px;color:#1f3b73}button{font-size:17px;padding:12px 20px;border:none;border-radius:10px;background:#2f6fde;color:#fff;width:100%;margin-top:10px}
+#st{margin-top:14px;font-size:16px;font-weight:bold}ul{padding-left:18px;font-size:13px;color:#556}small{color:#889}</style></head>
+<body><div class="box">
+<h1>第二步：保存测试</h1>
+<p>请点下面的按钮。如果显示"✅ 保存成功"，请截图发给我们，谢谢！<br><small>（测试数据，不含任何账目）</small></p>
+<button id="b">点击测试保存 / 저장 테스트</button>
+<div id="st">⏳ 正在连接数据库… / 연결 중…</div>
+<p style="margin:14px 0 4px">最近记录 / 최근 기록:</p><ul id="list"></ul>
+<small id="t"></small></div>
+<script>
+const U='https://vcxnkcemuuvlkxmcisvc.supabase.co/rest/v1/access_test',K='sb_publishable_L3zIF2WHYk4tdBa6iaSTyg_38Ok6RKW';
+const H={apikey:K,Authorization:'Bearer '+K,'Content-Type':'application/json',Prefer:'return=representation'};
+const st=document.getElementById('st'),list=document.getElementById('list');
+async function load(){const t0=Date.now();const r=await fetch(U+'?select=*&order=id.desc&limit=5',{headers:H});if(!r.ok)throw new Error('HTTP '+r.status);
+ const d=await r.json();list.innerHTML=d.map(x=>'<li>'+new Date(x.created_at).toLocaleString()+' — '+x.msg.replace(/</g,'&lt;')+'</li>').join('');return Date.now()-t0;}
+load().then(ms=>st.textContent='✅ 读取成功 / 읽기 성공 ('+ms+'ms)').catch(e=>{st.textContent='❌ 读取失败 / 읽기 실패: '+e.message;st.style.color='#c00'});
+document.getElementById('b').onclick=async()=>{st.textContent='⏳ 保存中… / 저장 중…';st.style.color='';const t0=Date.now();
+ try{const tz=Intl.DateTimeFormat().resolvedOptions().timeZone;const r=await fetch(U,{method:'POST',headers:H,body:JSON.stringify({msg:'测试 from '+tz+' · '+navigator.userAgent.slice(0,60)})});
+ if(!r.ok)throw new Error('HTTP '+r.status);await load();st.textContent='✅ 保存成功 / 저장 성공 ('+(Date.now()-t0)+'ms)';st.style.color='#1b7a3d';}
+ catch(e){st.textContent='❌ 保存失败 / 저장 실패: '+e.message;st.style.color='#c00';}};
+document.getElementById('t').textContent='PetWellbe DB test · '+new Date().toLocaleString();
+</script></body></html>
